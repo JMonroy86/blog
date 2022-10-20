@@ -3,12 +3,9 @@ import uvicorn
 from blog.core.config import Settings
 from blog.core.db_config import init_db
 from blog.apis.v1.base import api_router
+from blog.core.api_dependencies import api_dependencies
 
 app = FastAPI(title=Settings.PROJECT_NAME, version=Settings.PROJECT_VERSION)
-
-
-async def start_db():
-    app.state.pool = await init_db()
 
 
 def include_router():
@@ -17,8 +14,11 @@ def include_router():
 
 @app.on_event("startup")
 async def startup_event():
+    db = await init_db()
+    if db is None:
+        raise Exception("error db es none")
     include_router()
-    await start_db()
+    api_dependencies(app=app, pool=db)
 
 
 def main():

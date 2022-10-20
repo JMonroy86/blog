@@ -1,15 +1,21 @@
 # from typing import Optional
+from typing import Protocol
 from pydantic import BaseModel, EmailStr
 
 
 # properties required during user creation
-class User_schema(BaseModel):
+class UserDto(BaseModel):
     username: str
     email: EmailStr
     password: str
+    is_active: bool
+    is_superuser: bool
 
 
-class UserDto(User_schema):
-    def __init__(self, _id: int, user: User_schema) -> None:
-        self.id = _id
-        self.user = user
+class Users(UserDto):
+    id: int
+
+
+class UserRepo(Protocol):
+    async def create_an_user(self, user_data: UserDto) -> Users:
+        ...
