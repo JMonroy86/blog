@@ -32,6 +32,7 @@ class UserRepoImpl(UserRepo):
             return user_created
 
     async def get_user_by_email(self, email) -> Users:
+        print(email)
         async with self._connection.acquire() as connection:
             return await connection.fetchrow(
                 'SELECT * FROM users WHERE email = $1', email)
